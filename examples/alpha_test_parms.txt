@@ -1,0 +1,11 @@
+# Toy test chain for the alpha feature (not real nuclear data; half-lives in s):
+#   214Pb (parent, T1/2 floated) -b-> 214Bi (60% alpha, floated / 40% beta)
+#   214Bi -a-> 210Tl -b-> 210Pb
+#   214Bi -b-> 214Po (100% alpha) -a-> 210Pb      (210Pb has two paths)
+# Columns 24-28: AlphaBR(%) errLo errHi lower upper, negative AlphaBR = float.
+#Name	Z	A	Half-life	Err	ErrHi	lowerHL	upperHL	P1n	Err	ErrHi	lowerP1n	upperP1n	P2n	Err	ErrHi	lowerP2n	upperP2n	Neu.Eff	Err	ErrHi	lower	upper	AlphaBR	Err	ErrHi	lower	upper
+^{214}Pb	82	214	-0.2	0.01	0.01	0.04	1	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1	0	0	0	0	200
+^{214}Bi	83	214	0.5	0.01	0.01	0.1	2.5	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1	-60	5	5	0	100
+^{214}Po	84	214	0.3	0.01	0.01	0.06	1.5	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1	100	0	0	0	100
+^{210}Tl	81	210	1.0	0.01	0.01	0.2	5	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1	0	0	0	0	200
+^{210}Pb	82	210	2.0	0.01	0.01	0.4	10	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1	0	0	0	0	200

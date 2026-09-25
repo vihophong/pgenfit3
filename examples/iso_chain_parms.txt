@@ -1,0 +1,5 @@
+# Test chain: parent (T1/2=0.1 s, floated) -> 92Se ground state (0.5 s) / isomer (2.0 s, isomer ratio 0.3, floated) -> 92Br
+# Isomer row: 23 ground-state columns, then isomer_ratio err low up, then the isomer's own 20 decay columns
+^{92}As	33	92	-0.1	0.001	0.001	0.02	0.5	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1
+^{92}Se*	34	92	0.5	0.01	0.01	0.1	2.5	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1	-0.3	0.05	0	1	2.0	0.01	0.01	0.4	10	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1
+^{92}Br	35	92	0.314	0.016	0.016	0.0628	1.57	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1

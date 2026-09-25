@@ -1,0 +1,9 @@
+void decaypath::Init(char*) read input files:
+/data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/As92parms.txt
+void decaypath::makePath()
+void decaypath::printMember()
+void decaypath::printPath()
+built in /data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/builds/pull.rt0sOs (22 species)
+==> 100 toys, 4 workers x 25, results in /data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/pull_study_results/as92_100_st5ms_all.txt
+==> memory budget 62 GB, 4 workers capped at 14 GB each
+==> done: 100/100 toys fitted -> /data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/pull_study_results/as92_100_st5ms_all.txt

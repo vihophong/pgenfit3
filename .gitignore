@@ -1,0 +1,12 @@
+# build directories (one per run, created by build.sh / run_*.sh)
+builds/
+*.o
+*.so
+__pycache__/
+
+# ROOT files: simulated toys, fit canvases, pull trees (can be hundreds of MB)
+*.root
+
+# large per-toy text output of pull studies (PULLDATA lines); plots and configs are kept
+pull_study_results/*_all.txt
+pull_study_results/*_worker_*.txt

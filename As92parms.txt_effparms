@@ -1,0 +1,3 @@
+#set value to negative: vary from val-err to val+err; set err to 0 mean constant (no MC variation)
+#betaEffFactor	err	betaEffFactor_1n	err	betaEffFactor_2n	err	neutronEffFactor_1nvs2n	errLo errHi
+1	0	1	0	1	0	0.604612	0	0

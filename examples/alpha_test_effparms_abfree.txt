@@ -1,0 +1,3 @@
+# be err b1ne err b2ne err n1n2ne errLo errHi ab err
+# ab = alpha/beta detection-efficiency ratio, FLOATING (negative); truth 2 = alphaeff/betaeff in simparms_alpha_test*.txt
+1	0	1	0	1	0	0.6	0	0	-2	0

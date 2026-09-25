@@ -1,0 +1,14 @@
+# Example: chain with alpha emitters whose alpha daughters are followed further
+# (illustrative values; half-lives in s). Columns 1-23 as in pgenfit/pgenfit2;
+# columns 24-28 = AlphaBR(%) errLo errHi lower upper (negative AlphaBR = float).
+# Rows without an alpha branch may give 0 or omit columns 24-28.
+# The parent must be the first row; the other rows may be in any order.
+#Name	Z	A	Half-life	Err	ErrHi	lowerHL	upperHL	P1n	Err	ErrHi	lowerP1n	upperP1n	P2n	Err	ErrHi	lowerP2n	upperP2n	Neu.Eff	Err	ErrHi	lower	upper	AlphaBR	Err	ErrHi	lower	upper
+^{218}Pb	82	218	-15	7	7	3	75	0	0	0	0	200	0	0	0	0	200	0.65	0	0	0	1	0	0	0	0	200
+^{218}Bi	83	218	33	1	1	6.6	165	0	0	0	0	200	0	0	0	0	200	0.65	0	0	0	1	0	0	0	0	200
+^{218}Po	84	218	185.82	0.6	0.6	37.164	929.1	0	0	0	0	200	0	0	0	0	200	0.65	0	0	0	1	99.978	0.003	0.003	0	200
+^{218}At	85	218	1.28	0.05	0.05	0.256	6.4	0	0	0	0	200	0	0	0	0	200	0.65	0	0	0	1	99.95	0.05	0.05	0	200
+^{214}Pb	82	214	1608	1.2	1.2	321.6	8040	0	0	0	0	200	0	0	0	0	200	0.65	0	0	0	1	0	0	0	0	200
+^{214}Bi	83	214	1194	2.4	2.4	238.8	5970	0	0	0	0	200	0	0	0	0	200	0.65	0	0	0	1	0.021	0.001	0.001	0	200
+^{214}Po	84	214	1.643e-4	2e-7	2e-7	3.286e-5	8.215e-4	0	0	0	0	200	0	0	0	0	200	0.65	0	0	0	1	100	0	0	0	200
+^{210}Tl	81	210	78	0.6	0.6	15.6	390	0	0	0	0	200	0	0	0	0	200	0.65	0	0	0	1	0	0	0	0	200

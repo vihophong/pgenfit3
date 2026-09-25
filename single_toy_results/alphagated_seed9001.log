@@ -1,0 +1,381 @@
+Loaded 5 species. Parent=^{214}Pb T1/2(input)=0.2 s
+alpha branch: ^{214}Bi pa=0.6 (floating)
+alpha branch: ^{214}Po pa=1 (fixed)
+be=1 (fixed)
+ab=2 (fixed)
+Alpha-gated fit: beta gate + alpha gate (tag: alpha>0)
+Correlation window in file: -10 s to +20 s
+Run-boundary cut: ionT range [3600.16, 33600.6], excluding 900 s at each edge
+Loaded 77989 forward-time + 8853 backward-time events (outside window 9724, dead time 0, run boundary 6304)
+  of which alpha-tagged: 31699 forward, 3546 backward
+Initial N0raw=119804 bkg=530.7 /s bkga=354.6 /s
+Minuit2Minimizer: Minimize with max-calls 2500 convergence for edm < 1 strategy 1
+Info in <Minuit2>: MnSeedGenerator Computing seed using NumericalGradient calculator
+Info in <Minuit2>: MnSeedGenerator Evaluated function and gradient in 56.655 ms
+Info in <Minuit2>: MnSeedGenerator Initial state: FCN =                 0 Edm =       61959.01759 NCalls =     21
+Info in <Minuit2>: MnSeedGenerator Initial state  
+  Minimum value : 0
+  Edm           : 61959.01759
+  Internal parameters:	[     -1.287002218     -1.287002218     -1.287002218    -0.7297276562     0.2013579208]	
+  Internal gradient  :	[       681439.665      19310.91288      6461.388101     -172739.7146     -544.6231813]	
+  Internal covariance matrix:
+[[  3.4745194e-07              0              0              0              0]
+ [              0  5.8219832e-06              0              0              0]
+ [              0              0  7.0476742e-06              0              0]
+ [              0              0              0  2.8110355e-06              0]
+ [              0              0              0              0  0.00050385024]]]
+Info in <Minuit2>: VariableMetricBuilder Start iterating until Edm is < 0.001 with call limit = 2500
+Info in <Minuit2>: VariableMetricBuilder    0 - FCN =                 0 Edm =       61959.01759 NCalls =     21
+Info in <Minuit2>: VariableMetricBuilder    1 - FCN =      -36321.27051 Edm =       378.0934297 NCalls =     35
+Info in <Minuit2>: VariableMetricBuilder    2 - FCN =      -36774.63929 Edm =       8.335247633 NCalls =     47
+Info in <Minuit2>: VariableMetricBuilder    3 - FCN =      -36788.49197 Edm =        3.86766853 NCalls =     59
+Info in <Minuit2>: VariableMetricBuilder    4 - FCN =      -36927.40611 Edm =        29.3791542 NCalls =     74
+Info in <Minuit2>: VariableMetricBuilder    5 - FCN =      -36961.51318 Edm =        1.31907254 NCalls =     86
+Info in <Minuit2>: VariableMetricBuilder    6 - FCN =      -36962.62568 Edm =     0.02049904011 NCalls =     98
+Info in <Minuit2>: VariableMetricBuilder    7 - FCN =      -36962.64278 Edm =   0.0002032601493 NCalls =    110
+Info in <Minuit2>: MnHesse Done after 85.4424 ms
+Info in <Minuit2>: VariableMetricBuilder After Hessian
+Info in <Minuit2>: VariableMetricBuilder    8 - FCN =      -36962.64278 Edm =   0.0001909676692 NCalls =    141
+Info in <Minuit2>: VariableMetricBuilder Stop iterating after 333.522 ms
+Minuit2Minimizer : Valid minimum - status = 0
+FVAL  = -36962.6427848051244
+Edm   = 0.000190967669235233531
+Nfcn  = 141
+N0raw	  = 48908.8	 +/-  623.895	(limited)
+bkg	  = 530.906	 +/-  6.80484	(limited)
+bkga	  = 358.693	 +/-  4.76013	(limited)
+l0	  = 3.4871	 +/-  0.0436544	(limited)
+pa1	  = 0.595199	 +/-  0.0100467	(limited)
+Minuit2Minimizer: Minimize with max-calls 2500 convergence for edm < 1 strategy 1
+Info in <Minuit2>: MnSeedGenerator Computing seed using NumericalGradient calculator
+Info in <Minuit2>: MnSeedGenerator Evaluated function and gradient in 40.1036 ms
+Info in <Minuit2>: MnSeedGenerator Initial state: FCN =      -36962.64278 Edm =   0.0002490375057 NCalls =     15
+Info in <Minuit2>: MnSeedGenerator Initial state  
+  Minimum value : -36962.64278
+  Edm           : 0.0002490375057
+  Internal parameters:	[     -1.389830627      -1.28694672     -1.285357867     -0.726286775     0.1915668265]	
+  Internal gradient  :	[      -34.8249666      2.380943425     -4.235048264      5.528218538     0.6539966953]	
+  Internal covariance matrix:
+[[  2.5890969e-07              0              0              0              0]
+ [              0  6.1888528e-06              0              0              0]
+ [              0              0  7.1993429e-06              0              0]
+ [              0              0              0  8.8813855e-06              0]
+ [              0              0              0              0  0.00057635895]]]
+Info in <Minuit2>: VariableMetricBuilder Start iterating until Edm is < 0.001 with call limit = 2500
+Info in <Minuit2>: VariableMetricBuilder    0 - FCN =      -36962.64278 Edm =   0.0002490375057 NCalls =     15
+Info in <Minuit2>: VariableMetricBuilder    1 - FCN =      -36962.64293 Edm =   1.815811783e-05 NCalls =     27
+Info in <Minuit2>: MnHesse Done after 74.2966 ms
+Info in <Minuit2>: VariableMetricBuilder After Hessian
+Info in <Minuit2>: VariableMetricBuilder    2 - FCN =      -36962.64293 Edm =   4.483312072e-05 NCalls =     58
+Info in <Minuit2>: VariableMetricBuilder Stop iterating after 109.775 ms
+Minuit2Minimizer : Valid minimum - status = 0
+FVAL  = -36962.6429309403757
+Edm   = 4.48331207184943464e-05
+Nfcn  = 58
+N0raw	  = 48910.2	 +/-  623.896	(limited)
+bkg	  = 530.89	 +/-  6.80465	(limited)
+bkga	  = 358.715	 +/-  4.76034	(limited)
+l0	  = 3.48701	 +/-  0.0436506	(limited)
+pa1	  = 0.595144	 +/-  0.010046	(limited)
+Info in <Minuit2>: Minuit2Minimizer::Hesse Using max-calls 2500
+Info in <Minuit2>: MnHesse Done after 77.5881 ms
+Info in <Minuit2>: Minuit2Minimizer::Hesse Hesse is valid - matrix is accurate
+******************************************************************************************************
+Minuit2Minimizer::GetMinosError - Run MINOS LOWER error for parameter #1 : bkg using max-calls 2500, tolerance 1
+Info in <Minuit2>: MnMinos Determination of lower Minos error for parameter 1
+Info in <Minuit2>: MnFunctionCross Run Migrad with fixed parameters:
+  Pos 1: bkg = 524.085
+Info in <Minuit2>: MnSeedGenerator Computing seed using NumericalGradient calculator
+Info in <Minuit2>: MnSeedGenerator Evaluated function and gradient in 38.1362 ms
+Info in <Minuit2>: MnSeedGenerator Initial state: FCN =      -36962.14111 Edm =   4.018557583e-05 NCalls =     13
+Info in <Minuit2>: MnSeedGenerator Initial state  
+  Minimum value : -36962.14111
+  Edm           : 4.018557583e-05
+  Internal parameters:	[      -1.38993107     -1.285373666    -0.7274301109     0.1953204668]	
+  Internal gradient  :	[      3.384522679    -0.9147951475     -1.598282704      0.102151155]	
+  Internal covariance matrix:
+[[  2.6675334e-06  2.4248256e-08  1.5228657e-05 -2.3135631e-05]
+ [  2.4248256e-08  7.2719275e-06  7.9146957e-07  2.5707564e-06]
+ [  1.5228657e-05  7.9146957e-07  9.6353271e-05 -0.00014882022]
+ [ -2.3135631e-05  2.5707564e-06 -0.00014882022   0.0008088831]]]
+Info in <Minuit2>: VariableMetricBuilder Start iterating until Edm is < 0.0005 with call limit = 2500
+Info in <Minuit2>: VariableMetricBuilder    0 - FCN =      -36962.14111 Edm =   4.018557583e-05 NCalls =     13
+Info in <Minuit2>: VariableMetricBuilder    1 - FCN =      -36962.14115 Edm =   7.508743018e-10 NCalls =     22
+Info in <Minuit2>: VariableMetricBuilder Stop iterating after 21.9088 ms
+Info in <Minuit2>: MnFunctionCross Result after Migrad FCN =      -36962.14115 Edm =   7.508743018e-10 NCalls =     22 
+  Pos |    Name    |  type   |      Value       |    Error +/-
+    0 |      N0raw | limited |      48859.40688 |  622.0337854
+    1 |        bkg |  fixed  |      524.0852824 |   6.80486247
+    2 |       bkga | limited |      358.6631254 |  4.759577182
+    3 |         l0 | limited |      3.480362346 | 0.04307818178
+    4 |        pa1 | limited |     0.5969816409 | 0.009878856507
+Info in <Minuit2>: MnMinos end of Minos scan for low interval for parameter bkg
+******************************************************************************************************
+Minuit2Minimizer::GetMinosError - Run MINOS UPPER error for parameter #1 : bkg using max-calls 2500, tolerance 1
+Info in <Minuit2>: MnMinos Determination of upper Minos error for parameter 1
+Info in <Minuit2>: MnFunctionCross Run Migrad with fixed parameters:
+  Pos 1: bkg = 537.695
+Info in <Minuit2>: MnSeedGenerator Computing seed using NumericalGradient calculator
+Info in <Minuit2>: MnSeedGenerator Evaluated function and gradient in 40.7182 ms
+Info in <Minuit2>: MnSeedGenerator Initial state: FCN =      -36962.14472 Edm =   4.182081087e-05 NCalls =     13
+Info in <Minuit2>: MnSeedGenerator Initial state  
+  Minimum value : -36962.14472
+  Edm           : 4.182081087e-05
+  Internal parameters:	[       -1.3897249     -1.285324199    -0.7251722117     0.1875922936]	
+  Internal gradient  :	[      3.321144534    -0.9158403518     -1.609625344     0.1053265898]	
+  Internal covariance matrix:
+[[  2.6675334e-06  2.4248256e-08  1.5228657e-05 -2.3135631e-05]
+ [  2.4248256e-08  7.2719275e-06  7.9146957e-07  2.5707564e-06]
+ [  1.5228657e-05  7.9146957e-07  9.6353271e-05 -0.00014882022]
+ [ -2.3135631e-05  2.5707564e-06 -0.00014882022   0.0008088831]]]
+Info in <Minuit2>: VariableMetricBuilder Start iterating until Edm is < 0.0005 with call limit = 2500
+Info in <Minuit2>: VariableMetricBuilder    0 - FCN =      -36962.14472 Edm =   4.182081087e-05 NCalls =     13
+Info in <Minuit2>: VariableMetricBuilder    1 - FCN =      -36962.14476 Edm =    1.64002751e-09 NCalls =     22
+Info in <Minuit2>: VariableMetricBuilder Stop iterating after 27.4333 ms
+Info in <Minuit2>: MnFunctionCross Result after Migrad FCN =      -36962.14476 Edm =    1.64002751e-09 NCalls =     22 
+  Pos |    Name    |  type   |      Value       |    Error +/-
+    0 |      N0raw | limited |      48970.66272 |   624.258756
+    1 |        bkg |  fixed  |      537.6950073 |   6.80486247
+    2 |       bkga | limited |      358.7866229 |  4.759714115
+    3 |         l0 | limited |      3.494412071 | 0.04333650298
+    4 |        pa1 | limited |     0.5931866746 | 0.009888480764
+Info in <Minuit2>: MnMinos end of Minos scan for up interval for parameter bkg
+Minos: Lower error for parameter bkg  :  -6.79277
+Minos: Upper error for parameter bkg  :  6.81736
+******************************************************************************************************
+Minuit2Minimizer::GetMinosError - Run MINOS LOWER error for parameter #3 : l0 using max-calls 2500, tolerance 1
+Info in <Minuit2>: MnMinos Determination of lower Minos error for parameter 3
+Info in <Minuit2>: MnFunctionCross Run Migrad with fixed parameters:
+  Pos 3: l0 = 3.44328
+Info in <Minuit2>: MnSeedGenerator Computing seed using NumericalGradient calculator
+Info in <Minuit2>: MnSeedGenerator Evaluated function and gradient in 29.0511 ms
+Info in <Minuit2>: MnSeedGenerator Initial state: FCN =      -36962.12645 Edm =   8.650392276e-05 NCalls =     11
+Info in <Minuit2>: MnSeedGenerator Initial state  
+  Minimum value : -36962.12645
+  Edm           : 8.650392276e-05
+  Internal parameters:	[     -1.390927322     -1.287245062     -1.285409179      0.202658139]	
+  Internal gradient  :	[      32.71062506       3.41598252   -0.02355630117    -0.2521880546]	
+  Internal covariance matrix:
+[[  2.7170182e-07 -2.6887194e-07 -1.0311337e-07  6.9673102e-07]
+ [ -2.6887194e-07  6.5355553e-06  5.5169682e-08 -7.5666333e-06]
+ [ -1.0311337e-07  5.5169682e-08  7.2658919e-06   3.729329e-06]
+ [  6.9673102e-07 -7.5666333e-06   3.729329e-06  0.00058778663]]]
+Info in <Minuit2>: VariableMetricBuilder Start iterating until Edm is < 0.0005 with call limit = 2500
+Info in <Minuit2>: VariableMetricBuilder    0 - FCN =      -36962.12645 Edm =   8.650392276e-05 NCalls =     11
+Info in <Minuit2>: VariableMetricBuilder    1 - FCN =      -36962.12653 Edm =   1.071561826e-08 NCalls =     20
+Info in <Minuit2>: VariableMetricBuilder Stop iterating after 26.7775 ms
+Info in <Minuit2>: MnFunctionCross Result after Migrad FCN =      -36962.12653 Edm =   1.071561826e-08 NCalls =     20 
+  Pos |    Name    |  type   |      Value       |    Error +/-
+    0 |      N0raw | limited |      48317.27337 |  196.3179106
+    1 |        bkg | limited |      529.7695848 |  6.715376481
+    2 |       bkga | limited |      358.5704004 |  4.756987182
+    3 |         l0 |  fixed  |      3.443281434 | 0.0437302091
+    4 |        pa1 | limited |     0.6006739591 | 0.00840533805
+Info in <Minuit2>: MnFunctionCross Run Migrad again (2nd) with fixed parameters:
+  Pos 3: l0 = 3.44398
+Info in <Minuit2>: MnSeedGenerator Computing seed using NumericalGradient calculator
+Info in <Minuit2>: MnSeedGenerator Evaluated function and gradient in 22.1722 ms
+Info in <Minuit2>: MnSeedGenerator Initial state: FCN =       -36962.1416 Edm =    0.001339216526 NCalls =      9
+Info in <Minuit2>: MnSeedGenerator Initial state  
+  Minimum value : -36962.1416
+  Edm           : 0.001339216526
+  Internal parameters:	[      -1.39093122      -1.28725278     -1.285407031     0.2027338278]	
+  Internal gradient  :	[     -141.6129484     -6.376656235     -2.589225791     0.7146422779]	
+  Internal covariance matrix:
+[[  2.6848806e-07 -2.6918376e-07  -1.021639e-07  6.9250764e-07]
+ [ -2.6918376e-07  6.5467156e-06  5.3742714e-08 -7.6902407e-06]
+ [  -1.021639e-07  5.3742714e-08  7.2658176e-06  3.7473005e-06]
+ [  6.9250764e-07 -7.6902407e-06  3.7473005e-06  0.00058913737]]]
+Info in <Minuit2>: VariableMetricBuilder Start iterating until Edm is < 0.0005 with call limit = 2500
+Info in <Minuit2>: VariableMetricBuilder    0 - FCN =       -36962.1416 Edm =    0.001339216526 NCalls =      9
+Info in <Minuit2>: VariableMetricBuilder    1 - FCN =      -36962.14294 Edm =   3.351153635e-09 NCalls =     18
+Info in <Minuit2>: VariableMetricBuilder Stop iterating after 24.4426 ms
+Info in <Minuit2>: MnFunctionCross Result after 2nd Migrad FCN =      -36962.14294 Edm =   3.351153635e-09 NCalls =     18 
+  Pos |    Name    |  type   |      Value       |    Error +/-
+    0 |      N0raw | limited |      48326.79669 |  196.2378813
+    1 |        bkg | limited |      529.7867723 |  6.715833486
+    2 |       bkga | limited |      358.5729085 |  4.756995814
+    3 |         l0 |  fixed  |      3.443981416 | 0.0437302091
+    4 |        pa1 | limited |       0.60058524 | 0.008407780779
+Info in <Minuit2>: MnFunctionCross Return: Found good value for aopt =  -0.0160018
+Info in <Minuit2>: MnMinos end of Minos scan for low interval for parameter l0
+******************************************************************************************************
+Minuit2Minimizer::GetMinosError - Run MINOS UPPER error for parameter #3 : l0 using max-calls 2500, tolerance 1
+Info in <Minuit2>: MnMinos Determination of upper Minos error for parameter 3
+Info in <Minuit2>: MnFunctionCross Run Migrad with fixed parameters:
+  Pos 3: l0 = 3.53074
+Info in <Minuit2>: MnSeedGenerator Computing seed using NumericalGradient calculator
+Info in <Minuit2>: MnSeedGenerator Evaluated function and gradient in 25.2754 ms
+Info in <Minuit2>: MnSeedGenerator Initial state: FCN =      -36962.15989 Edm =   7.993422349e-05 NCalls =     11
+Info in <Minuit2>: MnSeedGenerator Initial state  
+  Minimum value : -36962.15989
+  Edm           : 7.993422349e-05
+  Internal parameters:	[     -1.388728648     -1.286657014     -1.285288687     0.1802546214]	
+  Internal gradient  :	[      31.00375361      3.426042577   -0.03922628648    -0.2491946816]	
+  Internal covariance matrix:
+[[  2.7170182e-07 -2.6887194e-07 -1.0311337e-07  6.9673102e-07]
+ [ -2.6887194e-07  6.5355553e-06  5.5169682e-08 -7.5666333e-06]
+ [ -1.0311337e-07  5.5169682e-08  7.2658919e-06   3.729329e-06]
+ [  6.9673102e-07 -7.5666333e-06   3.729329e-06  0.00058778663]]]
+Info in <Minuit2>: VariableMetricBuilder Start iterating until Edm is < 0.0005 with call limit = 2500
+Info in <Minuit2>: VariableMetricBuilder    0 - FCN =      -36962.15989 Edm =   7.993422349e-05 NCalls =     11
+Info in <Minuit2>: VariableMetricBuilder    1 - FCN =      -36962.15997 Edm =   1.046020624e-08 NCalls =     20
+Info in <Minuit2>: VariableMetricBuilder Stop iterating after 24.4291 ms
+Info in <Minuit2>: MnFunctionCross Result after Migrad FCN =      -36962.15997 Edm =   1.046020624e-08 NCalls =     20 
+  Pos |    Name    |  type   |      Value       |    Error +/-
+    0 |      N0raw | limited |      49502.59664 |  201.1002964
+    1 |        bkg | limited |      531.9535167 |  6.717008146
+    2 |       bkga | limited |      358.8710897 |  4.758925378
+    3 |         l0 |  fixed  |      3.530741853 | 0.0437302091
+    4 |        pa1 | limited |     0.5896771615 | 0.008414747711
+Info in <Minuit2>: MnFunctionCross Run Migrad again (2nd) with fixed parameters:
+  Pos 3: l0 = 3.53151
+Info in <Minuit2>: MnSeedGenerator Computing seed using NumericalGradient calculator
+Info in <Minuit2>: MnSeedGenerator Evaluated function and gradient in 24.5277 ms
+Info in <Minuit2>: MnSeedGenerator Initial state: FCN =      -36962.14143 Edm =    0.001503826914 NCalls =      9
+Info in <Minuit2>: MnSeedGenerator Initial state  
+  Minimum value : -36962.14143
+  Edm           : 0.001503826914
+  Internal parameters:	[     -1.388732314     -1.286664983     -1.285286576     0.1803300923]	
+  Internal gradient  :	[     -148.1477706     -6.795924466     -2.740158964     0.7711485082]	
+  Internal covariance matrix:
+[[  2.7503733e-07 -2.6800771e-07    -1.0397e-07  7.2162483e-07]
+ [ -2.6800771e-07  6.5235546e-06  5.6984478e-08 -7.3810872e-06]
+ [    -1.0397e-07  5.6984478e-08  7.2657725e-06  3.6930964e-06]
+ [  7.2162483e-07 -7.3810872e-06  3.6930964e-06  0.00058534858]]]
+Info in <Minuit2>: VariableMetricBuilder Start iterating until Edm is < 0.0005 with call limit = 2500
+Info in <Minuit2>: VariableMetricBuilder    0 - FCN =      -36962.14143 Edm =    0.001503826914 NCalls =      9
+Info in <Minuit2>: VariableMetricBuilder    1 - FCN =      -36962.14293 Edm =   5.135778626e-09 NCalls =     18
+Info in <Minuit2>: VariableMetricBuilder Stop iterating after 24.7263 ms
+Info in <Minuit2>: MnFunctionCross Result after 2nd Migrad FCN =      -36962.14293 Edm =   5.135778626e-09 NCalls =     18 
+  Pos |    Name    |  type   |      Value       |    Error +/-
+    0 |      N0raw | limited |      49512.92331 |  201.1956103
+    1 |        bkg | limited |      531.9729997 |  6.716671431
+    2 |       bkga | limited |      358.8736437 |  4.758940652
+    3 |         l0 |  fixed  |      3.531506715 | 0.0437302091
+    4 |        pa1 | limited |     0.5895825873 | 0.008416779158
+Info in <Minuit2>: MnFunctionCross Return: Found good value for aopt =  0.017492
+Info in <Minuit2>: MnMinos end of Minos scan for up interval for parameter l0
+Minos: Lower error for parameter l0  :  -0.0430304
+Minos: Upper error for parameter l0  :  0.0444951
+******************************************************************************************************
+Minuit2Minimizer::GetMinosError - Run MINOS LOWER error for parameter #4 : pa1 using max-calls 2500, tolerance 1
+Info in <Minuit2>: MnMinos Determination of lower Minos error for parameter 4
+Info in <Minuit2>: MnFunctionCross Run Migrad with fixed parameters:
+  Pos 4: pa1 = 0.585093
+Info in <Minuit2>: MnSeedGenerator Computing seed using NumericalGradient calculator
+Info in <Minuit2>: MnSeedGenerator Evaluated function and gradient in 34.6156 ms
+Info in <Minuit2>: MnSeedGenerator Initial state: FCN =      -36962.14804 Edm =   4.534807183e-05 NCalls =     13
+Info in <Minuit2>: MnSeedGenerator Initial state  
+  Minimum value : -36962.14804
+  Edm           : 4.534807183e-05
+  Internal parameters:	[      -1.38924366     -1.286605462     -1.285407033    -0.7224545847]	
+  Internal gradient  :	[      5.308621888      1.789188024     -1.018198801     -2.329120939]	
+  Internal covariance matrix:
+[[  2.0059159e-06 -2.6265819e-08  9.7246053e-08  1.0966114e-05]
+ [ -2.6265819e-08  6.4696104e-06  1.3075295e-07  1.4766752e-06]
+ [  9.7246053e-08  1.3075295e-07  7.2663998e-06  1.2942875e-06]
+ [  1.0966114e-05  1.4766752e-06  1.2942875e-06  6.9310023e-05]]]
+Info in <Minuit2>: VariableMetricBuilder Start iterating until Edm is < 0.0005 with call limit = 2500
+Info in <Minuit2>: VariableMetricBuilder    0 - FCN =      -36962.14804 Edm =   4.534807183e-05 NCalls =     13
+Info in <Minuit2>: VariableMetricBuilder    1 - FCN =      -36962.14809 Edm =   7.712121622e-09 NCalls =     22
+Info in <Minuit2>: VariableMetricBuilder Stop iterating after 23.5012 ms
+Info in <Minuit2>: MnFunctionCross Result after Migrad FCN =      -36962.14809 Edm =   7.712121622e-09 NCalls =     22 
+  Pos |    Name    |  type   |      Value       |    Error +/-
+    0 |      N0raw | limited |      49229.75013 |  544.5868601
+    1 |        bkg | limited |      532.1602836 |  6.687354978
+    2 |       bkga | limited |      358.5824534 |  4.754898738
+    3 |         l0 | limited |       3.51129091 | 0.03698861977
+    4 |        pa1 |  fixed  |     0.5850929305 | 0.0100515023
+Info in <Minuit2>: MnFunctionCross Run Migrad again (2nd) with fixed parameters:
+  Pos 4: pa1 = 0.585041
+Info in <Minuit2>: MnSeedGenerator Computing seed using NumericalGradient calculator
+Info in <Minuit2>: MnSeedGenerator Evaluated function and gradient in 34.7721 ms
+Info in <Minuit2>: MnSeedGenerator Initial state: FCN =      -36962.14289 Edm =   6.587983493e-06 NCalls =     13
+Info in <Minuit2>: MnSeedGenerator Initial state  
+  Minimum value : -36962.14289
+  Edm           : 6.587983493e-06
+  Internal parameters:	[     -1.389236141     -1.286609394     -1.285402201    -0.7224036386]	
+  Internal gradient  :	[     0.6701198941    -0.4057206935     0.2039658175    -0.6949941141]	
+  Internal covariance matrix:
+[[  2.0280612e-06 -2.6329521e-08  9.8758244e-08  1.1112125e-05]
+ [ -2.6329521e-08  6.4636224e-06  1.3736148e-07  1.4783509e-06]
+ [  9.8758244e-08  1.3736148e-07  7.2592002e-06  1.3019434e-06]
+ [  1.1112125e-05  1.4783509e-06  1.3019434e-06  7.0271985e-05]]]
+Info in <Minuit2>: VariableMetricBuilder Start iterating until Edm is < 0.0005 with call limit = 2500
+Info in <Minuit2>: VariableMetricBuilder    0 - FCN =      -36962.14289 Edm =   6.587983493e-06 NCalls =     13
+Info in <Minuit2>: VariableMetricBuilder    1 - FCN =      -36962.14289 Edm =   2.182852904e-11 NCalls =     22
+Info in <Minuit2>: VariableMetricBuilder Stop iterating after 20.6889 ms
+Info in <Minuit2>: MnFunctionCross Result after 2nd Migrad FCN =      -36962.14289 Edm =   2.182852904e-11 NCalls =     22 
+  Pos |    Name    |  type   |      Value       |    Error +/-
+    0 |      N0raw | limited |       49231.4626 |  544.8748333
+    1 |        bkg | limited |      532.1670529 |  6.689012649
+    2 |       bkga | limited |      358.5817219 |  4.755072694
+    3 |         l0 | limited |      3.511421101 | 0.03700214017
+    4 |        pa1 |  fixed  |     0.5850406899 | 0.0100515023
+Info in <Minuit2>: MnFunctionCross Return: Found good value for aopt =  0.00515968
+Info in <Minuit2>: MnMinos end of Minos scan for low interval for parameter pa1
+******************************************************************************************************
+Minuit2Minimizer::GetMinosError - Run MINOS UPPER error for parameter #4 : pa1 using max-calls 2500, tolerance 1
+Info in <Minuit2>: MnMinos Determination of upper Minos error for parameter 4
+Info in <Minuit2>: MnFunctionCross Run Migrad with fixed parameters:
+  Pos 4: pa1 = 0.605196
+Info in <Minuit2>: MnSeedGenerator Computing seed using NumericalGradient calculator
+Info in <Minuit2>: MnSeedGenerator Evaluated function and gradient in 34.4775 ms
+Info in <Minuit2>: MnSeedGenerator Initial state: FCN =      -36962.13819 Edm =   3.959284439e-05 NCalls =     13
+Info in <Minuit2>: MnSeedGenerator Initial state  
+  Minimum value : -36962.13819
+  Edm           : 3.959284439e-05
+  Internal parameters:	[     -1.390412309     -1.287296614     -1.285290833    -0.7301477379]	
+  Internal gradient  :	[      5.690387735      1.782948311     -1.004855975     -2.269104254]	
+  Internal covariance matrix:
+[[  2.0059159e-06 -2.6265819e-08  9.7246053e-08  1.0966114e-05]
+ [ -2.6265819e-08  6.4696104e-06  1.3075295e-07  1.4766752e-06]
+ [  9.7246053e-08  1.3075295e-07  7.2663998e-06  1.2942875e-06]
+ [  1.0966114e-05  1.4766752e-06  1.2942875e-06  6.9310023e-05]]]
+Info in <Minuit2>: VariableMetricBuilder Start iterating until Edm is < 0.0005 with call limit = 2500
+Info in <Minuit2>: VariableMetricBuilder    0 - FCN =      -36962.13819 Edm =   3.959284439e-05 NCalls =     13
+Info in <Minuit2>: VariableMetricBuilder    1 - FCN =      -36962.13823 Edm =   5.499702088e-09 NCalls =     22
+Info in <Minuit2>: VariableMetricBuilder Stop iterating after 20.2442 ms
+Info in <Minuit2>: MnFunctionCross Result after Migrad FCN =      -36962.13823 Edm =   5.499702088e-09 NCalls =     22 
+  Pos |    Name    |  type   |      Value       |    Error +/-
+    0 |      N0raw | limited |      48599.36616 |    535.63462
+    1 |        bkg | limited |      529.5922362 |  6.678114138
+    2 |       bkga | limited |      358.8722608 |  4.761377303
+    3 |         l0 | limited |      3.463421864 | 0.03626092588
+    4 |        pa1 |  fixed  |     0.6051959351 | 0.0100515023
+Info in <Minuit2>: MnMinos end of Minos scan for up interval for parameter pa1
+Minos: Lower error for parameter pa1  :  -0.0101034
+Minos: Upper error for parameter pa1  :  0.0100046
+
+  RooFitResult: minimized FCN value: -36962.6, estimated distance to minimum: 4.49315e-05
+                covariance matrix quality: Full, accurate covariance matrix
+                Status : MIGRAD=0 MIGRAD=0 HESSE=0 MINOS=0 
+
+    Floating Parameter    FinalValue +/-  Error   
+  --------------------  --------------------------
+                 N0raw    4.8910e+04 +/-  6.25e+02
+                   bkg    5.3089e+02 +/-  6.80e+00
+                  bkga    3.5872e+02 +/-  4.76e+00
+                    l0    3.4870e+00 +/-  4.37e-02
+                   pa1    5.9514e-01 +/-  1.01e-02
+
+
+===== Result =====
+parent T1/2 = 0.19878 s  (+0.00250452 / -0.00248363)   input 0.2 s
+bkg rate    = 530.89 +/- 6.80486 /s
+status=0 covQual=3  fit time 1.19812 s
+
+----- total decays per physically-decaying species (all time) -----
+  ^{214}Pb: 14026.4 +/- 57.2927
+  ^{214}Bi: 14026.4 +/- 57.2927
+  ^{214}Po: 5678.66 +/- 140.513
+  ^{210}Tl: 8347.73 +/- 148.436
+  ^{210}Pb: 14026.4 +/- 57.2927
+GOF aneg: chi2(Baker-Cousins)/ndof = 115.1/99 = 1.16263
+GOF apos: chi2(Baker-Cousins)/ndof = 165.774/197 = 0.841492
+GOF bneg: chi2(Baker-Cousins)/ndof = 104.238/99 = 1.05291
+GOF bpos: chi2(Baker-Cousins)/ndof = 223.644/197 = 1.13525
+GOF sumpos: chi2(Baker-Cousins)/ndof = 222.497/196 = 1.13519
+Info in <TCanvas::Print>: png file /data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/single_toy_results/alphagated_seed9001_fit.png has been created
+PULLDATA l0=3.48701164344 l0err=0.0437302090961 l0errhi=0.0444951394527 l0errlo=-0.043030448896 l0true=3.4657359028 halflife=0.198779714964 N0raw=48910.1931653 N0rawerr=625.032076312 TrueNbeta=14026.3922712 TrueNbetaerr=57.2926828175 npos=77989 nneg=8853 napos=31699 naneg=3546 status=0 covQual=3 fittimesec=1.198122213 bkg=530.890144823 bkgerr=6.80486246995 bkgerrhi=6.81736337487 bkgerrlo=-6.79277147063 bkga=358.715413623 bkgaerr=4.76032962804 bkgaerrhi=4.76032962804 bkgaerrlo=-4.76032962804 pa1=0.595144432834 pa1err=0.0100515023007 pa1errhi=0.0100046065585 pa1errlo=-0.0101033648041 pa1true=0.6 gof_aneg_chi2lambda=115.100102361 gof_aneg_nbins=100 gof_aneg_ndof=99 gof_apos_chi2lambda=165.773890516 gof_apos_nbins=201 gof_apos_ndof=197 gof_bneg_chi2lambda=104.237881933 gof_bneg_nbins=100 gof_bneg_ndof=99 gof_bpos_chi2lambda=223.644393582 gof_bpos_nbins=201 gof_bpos_ndof=197 gof_sumpos_chi2lambda=222.496822335 gof_sumpos_nbins=201 gof_sumpos_ndof=196

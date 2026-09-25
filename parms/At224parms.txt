@@ -1,0 +1,14 @@
+# 224At decay chain (from the decay-path figure):
+#   224At -b-> 224Rn -b-> 224Fr -b-> 224Ra -a-> 220Rn -a-> 216Po -a-> 212Pb
+# Half-lives (s), errors and beta/alpha branchings from pgenfit/parms/decaydatanudat3.csv
+# (NuDat/NUBASE mix, the table pgenfit's autogenparmsfile.C uses). P1n/P2n = 0.
+# lowerHL/upperHL = 0.2x / 5x the half-life; the parent half-life is floated (negative).
+# Columns 24-28: AlphaBR(%) errLo errHi lower upper (negative = float).
+#Name	Z	A	Half-life	Abs_Error_HL	Abs_Error_HL_Hi	lowerHL	upperHL	P1n	Abs_Error_P1n	Abs_Error_P1n_Hi	lowerP1n	upperP1n	P2n	Abs_Error_P2n	Abs_Error_P2n_Hi	lowerP2n	upperP2n	Neu.Eff	Neu.Eff_Err	Neu.Eff_ErrHi	lowerNeu.Eff	upperNeu.Eff	AlphaBR	D_AlphaBR	D_AlphaBR_Hi	lowerAlphaBR	upperAlphaBR
+^{224}At	85	224	-76.2	22.8	138	15.24	381	0	0	0	0	200	0	0	0	0	200	0.646575	0.0193585	0.0193585	0	1	0	0	0	0	200
+^{224}Rn	86	224	6840	360	360	1368	34200	0	0	0	0	200	0	0	0	0	200	0.646575	0.0193585	0.0193585	0	1	0	0	0	0	200
+^{224}Fr	87	224	199.8	6	6	39.96	999	0	0	0	0	200	0	0	0	0	200	0.646575	0.0193585	0.0193585	0	1	0	0	0	0	200
+^{224}Ra	88	224	313744	103.68	103.68	62748.9	1.56872e+06	0	0	0	0	200	0	0	0	0	200	0.646575	0.0193585	0.0193585	0	1	100	0	0	0	200
+^{220}Rn	86	220	55.6	0.1	0.1	11.12	278	0	0	0	0	200	0	0	0	0	200	0.646575	0.0193585	0.0193585	0	1	100	0	0	0	200
+^{216}Po	84	216	0.144	0.0006	0.0006	0.0288	0.72	0	0	0	0	200	0	0	0	0	200	0.646575	0.0193585	0.0193585	0	1	100	0	0	0	200
+^{212}Pb	82	212	38260.8	21.6	21.6	7652.16	191304	0	0	0	0	200	0	0	0	0	200	0.646575	0.0193585	0.0193585	0	1	0	0	0	0	200
