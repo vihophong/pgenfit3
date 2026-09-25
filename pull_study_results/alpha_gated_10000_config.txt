@@ -1,0 +1,2 @@
+# parmsex=/data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/examples/alpha_test_parms.txt simparmsex=/data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/examples/simparms_alpha_test_long.txt effparms=/data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/examples/alpha_test_effparms.txt
+# startSeed=8300000 nToys=10000 boundaryMarginSec=900 startTime=0 timeRange=10

@@ -1,0 +1,9 @@
+void decaypath::Init(char*) read input files:
+/data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/examples/alpha_test_parms.txt
+void decaypath::makePath()
+void decaypath::printMember()
+void decaypath::printPath()
+built in /data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/builds/pull.ibLp6s (5 species)
+==> 10000 toys, 24 workers x 417, results in /data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/pull_study_results/alpha_gated_10000_all.txt
+==> memory budget 62 GB, 24 workers capped at 2 GB each
+==> done: 10000/10000 toys fitted -> /data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/pull_study_results/alpha_gated_10000_all.txt
