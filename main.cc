@@ -6,7 +6,13 @@
 // beta-decay curve (no neutron gates) fitted simultaneously in forward
 // and backward time -- see decayModel.hh.
 //
-// Usage: ./main <parmsex_file>
+// Usage: ./main <parmsex_file> [prefix]
+//
+// prefix (e.g. "s0_", for fitting a mixture of several implanted species):
+// every parameter and RooFit object name in the generated code gets this
+// prefix -- except the shared be, ab, bkg, bkga and the category labels --
+// and the builder is named buildDecayModel_<prefix>, so several networks
+// can be compiled into one library and fitted together.
 
 #include <decaypath.hh>
 #include <iostream>
@@ -15,6 +21,8 @@
 #include <string>
 #include <vector>
 #include <cctype>
+#include <regex>
+#include <set>
 using namespace std;
 
 path* readPathFile()
@@ -192,7 +200,7 @@ void generateDecayCurveModel(path* fpath, const std::vector<bool>& hasAlpha)
     auto emitDeps=[&](const std::string& varName, const std::string& formula){
         ofnc<<"RooArgList "<<varName<<"deps;"<<std::endl;
         for (auto& d : findDeps(depNamesP, formula))
-            ofnc<<varName<<"deps.add(*(RooRealVar*)P.find(\""<<d<<"\"));"<<std::endl;
+            ofnc<<varName<<"deps.add(*(RooAbsArg*)P.find(\""<<d<<"\"));"<<std::endl;
         for (auto& d : findDeps(depNamesLocal, formula))
             ofnc<<varName<<"deps.add(*"<<d<<");"<<std::endl;
         return varName+"deps";
@@ -257,6 +265,11 @@ void generateDecayCurveModel(path* fpath, const std::vector<bool>& hasAlpha)
     }
     ofnc<<"RooRealSumPdf* decayPos = new RooRealSumPdf(\"decayPos\",\"\",RooArgList("<<shapes.str()<<"*flatPos),RooArgList("<<coefs.str()<<"bkg),true);"<<std::endl;
     ofnc<<"RooRealSumPdf* bkgNeg = new RooRealSumPdf(\"bkgNeg\",\"\",RooArgList(*flatNeg),RooArgList(bkg),true);"<<std::endl;
+    //! the same forward-time activity without the background term (mixture fits)
+    std::string shapesNoFlat=shapes.str(); shapesNoFlat.pop_back();
+    std::string coefsNoBkg=coefs.str(); coefsNoBkg.pop_back();
+    ofnc<<"RooRealSumPdf* signalPos = new RooRealSumPdf(\"signalPos\",\"\",RooArgList("<<shapesNoFlat<<"),RooArgList("<<coefsNoBkg<<"),true);"<<std::endl;
+    ofnc<<"M->signalPos=signalPos;"<<std::endl;
     ofnc<<"RooAddition* TrueNbetaAll = new RooAddition(\"TrueNbetaAll\",\"\",RooArgList("<<totals.str()<<"));"<<std::endl;
     ofnc<<"RooRealSumPdf* CombinedBkgPos = new RooRealSumPdf(\"CombinedBkgPos\",\"\",RooArgList(*flatPos),RooArgList(bkg),true);"<<std::endl;
     if (nri>1){
@@ -295,6 +308,11 @@ void generateDecayCurveModel(path* fpath, const std::vector<bool>& hasAlpha)
         ofnc<<"simPdfGated->addPdf(*alphaPos,\"apos\"); simPdfGated->addPdf(*alphaNeg,\"aneg\");"<<std::endl;
         ofnc<<"M->gcat=gcat; M->simPdfGated=simPdfGated; M->betaPos=betaPos; M->alphaPos=alphaPos; M->alphaNeg=alphaNeg;"<<std::endl;
         ofnc<<"M->CombinedBkgPosGated=CombinedBkgPosGated;"<<std::endl;
+        std::string cBs=cB.str(); cBs.pop_back();
+        std::string cAs=cA.str(); cAs.pop_back();
+        std::string shapesNoFlatG=shapes.str(); shapesNoFlatG.pop_back();
+        ofnc<<"M->betaSignalPos = new RooRealSumPdf(\"betaSignalPos\",\"\",RooArgList("<<shapesNoFlatG<<"),RooArgList("<<cBs<<"),true);"<<std::endl;
+        ofnc<<"M->alphaSignalPos = new RooRealSumPdf(\"alphaSignalPos\",\"\",RooArgList("<<shapesNoFlatG<<"),RooArgList("<<cAs<<"),true);"<<std::endl;
     }
     ofnc<<"RooCategory* cat = new RooCategory(\"cat\",\"\");"<<std::endl;
     ofnc<<"cat->defineType(\"pos\",0); cat->defineType(\"neg\",1);"<<std::endl;
@@ -307,12 +325,51 @@ void generateDecayCurveModel(path* fpath, const std::vector<bool>& hasAlpha)
     ofnc<<"}"<<std::endl;
 }
 
+//! Rename identifiers inside the string literals of the generated file (parameter
+//! names in formulas and P.find() keys, RooFit object names) with a prefix, and
+//! the builder function, so networks generated with different prefixes can be
+//! linked and fitted together. Shared parameters and category labels keep
+//! their names.
+void applyPrefix(const std::string& file, const std::string& prefix)
+{
+    std::ifstream in(file);
+    std::stringstream buf; buf<<in.rdbuf();
+    std::string src=buf.str();
+    const std::set<std::string> shared={"be","ab","bkg","bkga","pos","neg","bpos","bneg","apos","aneg"};
+    const std::regex strLit("\"([^\"]*)\"");
+    const std::regex ident("[A-Za-z_][A-Za-z0-9_]*");
+    std::string out;
+    auto it=std::sregex_iterator(src.begin(),src.end(),strLit);
+    size_t last=0;
+    for (; it!=std::sregex_iterator(); ++it){
+        const std::smatch& m=*it;
+        out+=src.substr(last,m.position(0)-last);
+        std::string lit=m[1].str(), renamed;
+        size_t l2=0;
+        for (auto jt=std::sregex_iterator(lit.begin(),lit.end(),ident); jt!=std::sregex_iterator(); ++jt){
+            renamed+=lit.substr(l2,jt->position(0)-l2);
+            std::string id=jt->str();
+            renamed+= shared.count(id) ? id : prefix+id;
+            l2=jt->position(0)+id.size();
+        }
+        renamed+=lit.substr(l2);
+        out+="\""+renamed+"\"";
+        last=m.position(0)+m.length(0);
+    }
+    out+=src.substr(last);
+    const std::string fn="DecayModel* buildDecayModel(";
+    size_t pos=out.find(fn);
+    if (pos!=std::string::npos) out.replace(pos,fn.size(),"DecayModel* buildDecayModel_"+prefix+"(");
+    std::ofstream(file)<<out;
+}
+
 int main(int argc, char *argv[])
 {
     if (argc<2){
-        std::cerr<<"Usage: "<<argv[0]<<" <parmsex_file>"<<std::endl;
+        std::cerr<<"Usage: "<<argv[0]<<" <parmsex_file> [prefix]"<<std::endl;
         return 1;
     }
+    const std::string prefix = (argc>2) ? argv[2] : "";
     decaypath* fdecaypath = new decaypath;
     fdecaypath->Init(argv[1]);
     fdecaypath->makePath();
@@ -327,5 +384,6 @@ int main(int argc, char *argv[])
         if (hasAlpha[k]) std::cout<<"alpha branch: "<<m->name<<" "<<m->decay_abr<<" %"<<(m->is_decay_abr_fix==0?" (floating)":"")<<std::endl;
     }
     generateDecayCurveModel(fpath, hasAlpha);
+    if (!prefix.empty()) applyPrefix("decayModel_cal.cc", prefix);
     return 0;
 }

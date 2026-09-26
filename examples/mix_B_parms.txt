@@ -1,0 +1,6 @@
+# Second implanted species for the mixture example (toy values, half-lives in s):
+#   100Rb (parent, T1/2 floated) -b-> 100Sr -b-> 100Y   (no neutron/alpha branches)
+#Name	Z	A	Half-life	Err	ErrHi	lowerHL	upperHL	P1n	Err	ErrHi	lowerP1n	upperP1n	P2n	Err	ErrHi	lowerP2n	upperP2n	Neu.Eff	Err	ErrHi	lower	upper
+^{100}Rb	37	100	-0.05	0.001	0.001	0.01	0.25	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1
+^{100}Sr	38	100	0.5	0.01	0.01	0.1	2.5	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1
+^{100}Y	39	100	2.0	0.01	0.01	0.4	10	0	0	0	0	200	0	0	0	0	200	0.6	0	0	0	1

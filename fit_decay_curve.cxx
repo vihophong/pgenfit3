@@ -57,6 +57,17 @@
 // <name>true = the value the toys were generated with. A pull width of 1
 // here and <1 with simulation.cc toys isolates the chain correlation.
 //
+// Mixture of implanted species: give several parmsex files separated by
+// commas ("A.txt,B.txt"; build with the same list, see build.sh). Each
+// species keeps its own network and parameters (prefix s<i>_), the
+// background (bkg, bkga) and be/ab are shared, and the parent
+// normalisations become s<i>_N0raw = Nimp*frac_s<i>*s<i>_l0: Nimp is the
+// total number of implants (in units of detected parent decays) and
+// frac_s<i> the implant fraction of species i (the last one is 1 minus the
+// others). The implant ratio frac_s0/frac_s1 is reported with its error.
+// For simulation_mix files the true fractions (TParameter nimplant_s<i>)
+// are printed as frac_s<i>true.
+//
 // Environment: FLOAT_PN=1 (see above); ALPHA_GATE, ALPHA_BRANCH (above);
 // GEN_TOYS, GEN_SEED (above);
 // SCAN_PARAM/SCAN_POINTS/SCAN_MIN/SCAN_MAX for a profile-likelihood scan
@@ -78,6 +89,9 @@
 #include <RooAddPdf.h>
 #include <RooMinimizer.h>
 #include <RooRandom.h>
+#include <RooPolynomial.h>
+#include <RooRealSumPdf.h>
+#include <RooFormulaVar.h>
 #include <RooPlot.h>
 #include <RooHist.h>
 #include <RooCurve.h>
@@ -297,7 +311,11 @@ int main(int argc, char** argv)
         return 1;
     }
     const std::string dataFile = argv[1];
-    const std::string parmsexFile = argv[2];
+    // one parmsex file, or a comma-separated list for a mixture of species
+    std::vector<std::string> parmsexFiles;
+    { std::stringstream ss(argv[2]); std::string item; while (std::getline(ss,item,',')) if (!item.empty()) parmsexFiles.push_back(item); }
+    const int nMix = parmsexFiles.size();
+    const bool isMix = nMix>1;
     const int ncpu = (argc>3) ? atoi(argv[3]) : 1;
     const std::string effFile = (argc>4) ? argv[4] : "none";
     const std::string outPrefix = (argc>5) ? argv[5] : "noplot";
@@ -319,44 +337,80 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    Int_t nri;
-    { std::ifstream f("path.txt"); if (!(f>>nri)){ std::cerr<<"cannot read path.txt (run ./main <parmsex> first)\n"; return 1; } }
-    auto species = parseParmsex(parmsexFile.c_str());
-    if ((int)species.size()!=nri){
-        std::cerr<<"parmsex file has "<<species.size()<<" species but path.txt says nri="<<nri<<"\n";
-        return 1;
-    }
-    std::cout<<"Loaded "<<nri<<" species. Parent="<<species[0].name
-             <<" T1/2(input)="<<std::log(2.0)/species[0].l<<" s\n";
-
-    // ---- parameters ----
+    // ---- parameters: one set per implanted species (prefix s<i>_ in a mixture) ----
     RooRealVar x_pos("x_pos","t (s)",startTime,timeRange);
     RooRealVar x_neg("x_neg","t (s)",-timeRange,0.0);
     RooArgList P;
-    std::vector<RooRealVar*> l(nri),p1n(nri),p2n(nri),py(nri),pa(nri);
     std::map<std::string,double> trueVal; // parmsex values of species parameters
-    for (int k=0;k<nri;k++){
-        const Species& s=species[k];
-        l[k]=new RooRealVar(Form("l%d",k),"",s.l,s.llow,s.lup);
-        p1n[k]=new RooRealVar(Form("p1n%d",k),"",s.p1n,0,1);
-        p2n[k]=new RooRealVar(Form("p2n%d",k),"",s.p2n,0,1);
-        py[k]=new RooRealVar(Form("py%d",k),"",s.populationRatio,0,1);
-        pa[k]=new RooRealVar(Form("pa%d",k),"",s.pa,0,1);
-        pa[k]->setConstant(!s.ispavary);
-        if (s.pa>0 || s.ispavary)
-            std::cout<<"alpha branch: "<<s.name<<" pa="<<s.pa<<(s.ispavary?" (floating)":" (fixed)")<<"\n";
-        l[k]->setConstant(!s.islvary);
-        p1n[k]->setConstant(!(floatPn && s.isp1nvary));
-        p2n[k]->setConstant(!(floatPn && s.isp2nvary));
-        py[k]->setConstant(!s.isPopulationRatioVary);
-        if (!floatPn && (s.isp1nvary || s.isp2nvary))
-            std::cout<<"note: "<<s.name<<" P1n/P2n float flag ignored (set FLOAT_PN=1 to float)\n";
-        trueVal[l[k]->GetName()]=s.l; trueVal[p1n[k]->GetName()]=s.p1n;
-        trueVal[p2n[k]->GetName()]=s.p2n; trueVal[py[k]->GetName()]=s.populationRatio;
-        trueVal[pa[k]->GetName()]=s.pa;
-        P.add(*l[k]); P.add(*p1n[k]); P.add(*p2n[k]); P.add(*py[k]); P.add(*pa[k]);
+    struct Member {
+        std::string pfx, file;
+        std::vector<Species> sp;
+        int nri=0;
+        std::vector<RooRealVar*> l,p1n,p2n,py,pa;
+        DecayModel* M=nullptr;
+    };
+    std::vector<Member> members(nMix);
+    for (int im=0; im<nMix; im++){
+        Member& mb=members[im];
+        mb.pfx = isMix ? Form("s%d_",im) : "";
+        mb.file = parmsexFiles[im];
+        const std::string pathFile = isMix ? "path_"+mb.pfx+".txt" : "path.txt";
+        { std::ifstream f(pathFile); if (!(f>>mb.nri)){ std::cerr<<"cannot read "<<pathFile<<" (build with build.sh first)\n"; return 1; } }
+        mb.sp = parseParmsex(mb.file.c_str());
+        if ((int)mb.sp.size()!=mb.nri){
+            std::cerr<<mb.file<<" has "<<mb.sp.size()<<" species but "<<pathFile<<" says nri="<<mb.nri<<"\n";
+            return 1;
+        }
+        std::cout<<(isMix?Form("Implanted species %d (%s): ",im,mb.file.c_str()):"")<<"Loaded "<<mb.nri<<" species. Parent="<<mb.sp[0].name
+                 <<" T1/2(input)="<<std::log(2.0)/mb.sp[0].l<<" s\n";
+        mb.l.resize(mb.nri); mb.p1n.resize(mb.nri); mb.p2n.resize(mb.nri); mb.py.resize(mb.nri); mb.pa.resize(mb.nri);
+        for (int k=0;k<mb.nri;k++){
+            const Species& s=mb.sp[k];
+            const std::string P_=mb.pfx;
+            mb.l[k]=new RooRealVar(Form("%sl%d",P_.c_str(),k),"",s.l,s.llow,s.lup);
+            mb.p1n[k]=new RooRealVar(Form("%sp1n%d",P_.c_str(),k),"",s.p1n,0,1);
+            mb.p2n[k]=new RooRealVar(Form("%sp2n%d",P_.c_str(),k),"",s.p2n,0,1);
+            mb.py[k]=new RooRealVar(Form("%spy%d",P_.c_str(),k),"",s.populationRatio,0,1);
+            mb.pa[k]=new RooRealVar(Form("%spa%d",P_.c_str(),k),"",s.pa,0,1);
+            mb.pa[k]->setConstant(!s.ispavary);
+            if (s.pa>0 || s.ispavary)
+                std::cout<<"alpha branch: "<<s.name<<" pa="<<s.pa<<(s.ispavary?" (floating)":" (fixed)")<<"\n";
+            mb.l[k]->setConstant(!s.islvary);
+            mb.p1n[k]->setConstant(!(floatPn && s.isp1nvary));
+            mb.p2n[k]->setConstant(!(floatPn && s.isp2nvary));
+            mb.py[k]->setConstant(!s.isPopulationRatioVary);
+            if (!floatPn && (s.isp1nvary || s.isp2nvary))
+                std::cout<<"note: "<<s.name<<" P1n/P2n float flag ignored (set FLOAT_PN=1 to float)\n";
+            trueVal[mb.l[k]->GetName()]=s.l; trueVal[mb.p1n[k]->GetName()]=s.p1n;
+            trueVal[mb.p2n[k]->GetName()]=s.p2n; trueVal[mb.py[k]->GetName()]=s.populationRatio;
+            trueVal[mb.pa[k]->GetName()]=s.pa;
+            P.add(*mb.l[k]); P.add(*mb.p1n[k]); P.add(*mb.p2n[k]); P.add(*mb.py[k]); P.add(*mb.pa[k]);
+        }
     }
+    // single species: the names used throughout below
+    std::vector<Species>& species = members[0].sp;
+    std::vector<RooRealVar*>& l = members[0].l;
+    const int nri = members[0].nri;
+
+    // parent normalisation: N0raw (single) or Nimp*frac_s<i>*l0 (mixture)
     RooRealVar N0raw("N0raw","parent activity at t=0 (counts/s)",1.0,1e-6,1e12);
+    RooRealVar Nimp("Nimp","implants, in detected parent decays",1.0,1e-6,1e12);
+    std::vector<RooAbsReal*> frac(nMix,nullptr);
+    if (isMix){
+        RooArgList freeFracs;
+        std::string lastFormula="1";
+        for (int im=0; im<nMix-1; im++){
+            auto* fv=new RooRealVar(Form("frac_s%d",im),"implant fraction",1.0/nMix,0,1);
+            frac[im]=fv; freeFracs.add(*fv);
+            lastFormula+=Form("-frac_s%d",im);
+        }
+        frac[nMix-1]=new RooFormulaVar(Form("frac_s%d",nMix-1),lastFormula.c_str(),freeFracs);
+        for (int im=0; im<nMix; im++)
+            P.add(*new RooFormulaVar(Form("s%d_N0raw",im),Form("Nimp*frac_s%d*s%d_l0",im,im),
+                                     RooArgList(Nimp,*frac[im],*members[im].l[0])));
+    } else {
+        P.add(N0raw);
+    }
     RooRealVar bkg("bkg","accidental rate (counts/s)",1.0,1e-6,1e12);
     RooRealVar bkga("bkga","alpha-gate accidental rate (counts/s)",1.0,1e-6,1e12);
     bkga.setConstant(!alphaGate);
@@ -382,17 +436,86 @@ int main(int argc, char** argv)
     setupFactor(ab, eff.ab);
     // effparms values serve as the truth for toy pulls when these float
     trueVal["be"]=eff.be.val; trueVal["ab"]=eff.ab.val;
-    P.add(N0raw); P.add(be); P.add(ab); P.add(bkg); P.add(bkga);
+    P.add(be); P.add(ab); P.add(bkg); P.add(bkga);
 
-    DecayModel* M = buildDecayModel(P, x_pos, x_neg);
-    if (alphaGate && !M->simPdfGated){
-        std::cerr<<"ALPHA_GATE=1 but no species in the parmsex file has an alpha branch\n";
+    // ---- models ----
+    std::vector<DecayModelBuilder> builders = decayModelBuilders();
+    if ((int)builders.size()!=nMix){
+        std::cerr<<"this build has "<<builders.size()<<" species model(s) but "<<nMix
+                 <<" parmsex file(s) were given -- build with the same parmsex list\n";
         return 1;
     }
-    // total mode: cat pos=0/neg=1; gated mode: gcat bpos=0/bneg=1/apos=2/aneg=3
-    RooSimultaneous& simPdf = alphaGate ? *M->simPdfGated : *M->simPdf;
-    RooCategory& cat = alphaGate ? *M->gcat : *M->cat;
+    for (int im=0; im<nMix; im++) members[im].M = builders[im](P, x_pos, x_neg);
+    DecayModel* M = members[0].M;
+
+    // pdfs used below: forward/backward (total mode) or the four gates
+    RooSimultaneous* simPdfPtr=nullptr;
+    RooCategory* catPtr=nullptr;
+    RooAbsPdf *decayPosPdf=nullptr, *bkgNegPdf=nullptr, *betaPosPdf=nullptr, *alphaPosPdf=nullptr, *alphaNegPdf=nullptr;
+    RooAbsPdf *bkgPosAllPdf=nullptr;  // background of the total forward curve
+    std::vector<std::pair<std::string,RooAbsPdf*>> components; // drawn with the background on the total curve
+    if (!isMix){
+        if (alphaGate && !M->simPdfGated){
+            std::cerr<<"ALPHA_GATE=1 but no species in the parmsex file has an alpha branch\n";
+            return 1;
+        }
+        // total mode: cat pos=0/neg=1; gated mode: gcat bpos=0/bneg=1/apos=2/aneg=3
+        simPdfPtr = alphaGate ? M->simPdfGated : M->simPdf;
+        catPtr = alphaGate ? M->gcat : M->cat;
+        decayPosPdf=M->decayPos; bkgNegPdf=M->bkgNeg;
+        betaPosPdf=M->betaPos; alphaPosPdf=M->alphaPos; alphaNegPdf=M->alphaNeg;
+        bkgPosAllPdf = alphaGate ? M->CombinedBkgPosGated : M->CombinedBkgPos;
+        components.push_back({"bkg+parent",new RooAddPdf("bkgPlusParent","",RooArgList(*bkgPosAllPdf,*M->ActivityPdfParentPos))});
+    } else {
+        // sum of the species' activities + one shared background
+        auto* flatPos=new RooPolynomial("mix_flatPos","",x_pos);
+        auto* flatNeg=new RooPolynomial("mix_flatNeg","",x_neg);
+        auto* bkgPos=new RooRealSumPdf("mix_bkgPos","",RooArgList(*flatPos),RooArgList(bkg),true);
+        bkgNegPdf=new RooRealSumPdf("mix_bkgNeg","",RooArgList(*flatNeg),RooArgList(bkg),true);
+        RooArgList posList;
+        for (auto& mb : members) posList.add(*mb.M->signalPos);
+        posList.add(*bkgPos);
+        decayPosPdf=new RooAddPdf("mix_decayPos","",posList);
+        auto* cat=new RooCategory("cat","");
+        cat->defineType("pos",0); cat->defineType("neg",1);
+        auto* sim=new RooSimultaneous("simPdf","",*cat);
+        sim->addPdf(*decayPosPdf,"pos"); sim->addPdf(*bkgNegPdf,"neg");
+        bkgPosAllPdf=bkgPos;
+        if (alphaGate){
+            bool anyAlpha=false;
+            for (auto& mb : members) anyAlpha = anyAlpha || mb.M->alphaSignalPos;
+            if (!anyAlpha){ std::cerr<<"ALPHA_GATE=1 but no implanted species has an alpha branch\n"; return 1; }
+            auto* flatPosA=new RooPolynomial("mix_flatPosA","",x_pos);
+            auto* flatNegA=new RooPolynomial("mix_flatNegA","",x_neg);
+            auto* bkgaPos=new RooRealSumPdf("mix_bkgaPos","",RooArgList(*flatPosA),RooArgList(bkga),true);
+            alphaNegPdf=new RooRealSumPdf("mix_alphaNeg","",RooArgList(*flatNegA),RooArgList(bkga),true);
+            RooArgList bList, aList;
+            for (auto& mb : members){
+                bList.add(mb.M->betaSignalPos ? *mb.M->betaSignalPos : *mb.M->signalPos);
+                if (mb.M->alphaSignalPos) aList.add(*mb.M->alphaSignalPos);
+            }
+            bList.add(*bkgPos); aList.add(*bkgaPos);
+            betaPosPdf=new RooAddPdf("mix_betaPos","",bList);
+            alphaPosPdf=new RooAddPdf("mix_alphaPos","",aList);
+            auto* gcat=new RooCategory("gcat","");
+            gcat->defineType("bpos",0); gcat->defineType("bneg",1); gcat->defineType("apos",2); gcat->defineType("aneg",3);
+            auto* simG=new RooSimultaneous("simPdfGated","",*gcat);
+            simG->addPdf(*betaPosPdf,"bpos"); simG->addPdf(*bkgNegPdf,"bneg");
+            simG->addPdf(*alphaPosPdf,"apos"); simG->addPdf(*alphaNegPdf,"aneg");
+            simPdfPtr=simG; catPtr=gcat;
+            auto* bkgAll=new RooFormulaVar("mix_bkgAll","bkg+bkga",RooArgList(bkg,bkga));
+            bkgPosAllPdf=new RooRealSumPdf("mix_bkgPosAll","",RooArgList(*flatPos),RooArgList(*bkgAll),true);
+        } else {
+            simPdfPtr=sim; catPtr=cat;
+        }
+        for (int im=0; im<nMix; im++)
+            components.push_back({Form("bkg+species %d",im),
+                new RooAddPdf(Form("bkgPlusSpecies%d",im),"",RooArgList(*bkgPosAllPdf,*members[im].M->signalPos))});
+    }
+    RooSimultaneous& simPdf = *simPdfPtr;
+    RooCategory& cat = *catPtr;
     if (alphaGate) std::cout<<"Alpha-gated fit: beta gate + alpha gate (tag: "<<alphaBranch<<">0)\n";
+    if (isMix) std::cout<<"Mixture fit of "<<nMix<<" implanted species\n";
 
     // ---- data ----
     TFile* f = TFile::Open(dataFile.c_str());
@@ -411,6 +534,19 @@ int main(int argc, char** argv)
                          <<", +"<<whi->GetVal()<<") -- the fit regions would be truncated\n";
                 return 1;
             }
+        }
+    }
+    if (isMix){
+        double ntot=0; std::vector<double> nimp(nMix,-1);
+        for (int im=0; im<nMix; im++){
+            auto* pn=(TParameter<double>*)f->Get(Form("nimplant_s%d",im));
+            if (pn){ nimp[im]=pn->GetVal(); ntot+=nimp[im]; }
+        }
+        if (ntot>0 && std::all_of(nimp.begin(),nimp.end(),[](double v){return v>=0;})){
+            for (int im=0; im<nMix; im++) trueVal[Form("frac_s%d",im)]=nimp[im]/ntot;
+            std::cout<<"True implant fractions in file:";
+            for (int im=0; im<nMix; im++) std::cout<<" "<<nimp[im]/ntot;
+            std::cout<<"\n";
         }
     }
     double simx=0, ionT=0;
@@ -479,6 +615,8 @@ int main(int argc, char** argv)
         // parent + daughters roughly double the parent-only count
         const double n0Guess = 0.5*nSig*l0*std::exp(l0*startTime)/std::max(1e-12,1.0-std::exp(-l0*posDur))/std::max(1e-6,eff.be.val);
         N0raw.setRange(1e-6, std::max(100.0, 50.0*n0Guess)); N0raw.setVal(n0Guess);
+        // mixture: N0raw = Nimp*frac*l0, so Nimp ~ N0raw/l0 with all species together
+        Nimp.setRange(1e-6, std::max(100.0, 50.0*n0Guess/l0)); Nimp.setVal(n0Guess/l0);
         bkg.setRange(1e-6, std::max(100.0, 50.0*bkgGuess));  bkg.setVal(bkgGuess);
         bkga.setRange(1e-6, std::max(100.0, 50.0*bkgaGuess)); bkga.setVal(bkgaGuess);
         std::cout<<"Initial N0raw="<<n0Guess<<" bkg="<<bkgGuess<<" /s"
@@ -513,7 +651,7 @@ int main(int argc, char** argv)
             for (auto* a : *pars){
                 auto* v=dynamic_cast<RooRealVar*>(a);
                 const std::string vn = v ? v->GetName() : "";
-                if (v && !v->isConstant() && vn!="N0raw" && vn!="bkga") minosPars.add(*v);
+                if (v && !v->isConstant() && vn!="N0raw" && vn!="Nimp" && vn!="bkga") minosPars.add(*v);
             }
             if (!minosPars.empty()) m.minos(minosPars);
         }
@@ -560,9 +698,18 @@ int main(int argc, char** argv)
     std::cout<<"bkg rate    = "<<bkg.getVal()<<" +/- "<<bkg.getError()<<" /s\n";
     std::cout<<"status="<<r->status()<<" covQual="<<r->covQual()<<"  fit time "<<fitTimeSec<<" s\n";
     std::cout<<"\n----- total decays per physically-decaying species (all time) -----\n";
-    for (int k=0;k<nri;k++)
-        std::cout<<"  "<<species[k].name<<": "<<M->TrueNbetaPerSpecies[k]->getVal()
-                 <<" +/- "<<M->TrueNbetaPerSpecies[k]->getPropagatedError(*r)<<"\n";
+    for (auto& mb : members)
+        for (int k=0;k<mb.nri;k++)
+            std::cout<<"  "<<mb.pfx<<mb.sp[k].name<<": "<<mb.M->TrueNbetaPerSpecies[k]->getVal()
+                     <<" +/- "<<mb.M->TrueNbetaPerSpecies[k]->getPropagatedError(*r)<<"\n";
+    // implant fractions and the implant ratio of the first two species
+    std::unique_ptr<RooFormulaVar> implantRatio;
+    if (isMix){
+        for (int im=0; im<nMix; im++)
+            std::cout<<"implant fraction species "<<im<<" = "<<frac[im]->getVal()<<" +/- "<<frac[im]->getPropagatedError(*r)<<"\n";
+        implantRatio.reset(new RooFormulaVar("implantRatio","frac_s0/frac_s1",RooArgList(*frac[0],*frac[1])));
+        std::cout<<"implant ratio N(s0)/N(s1) = "<<implantRatio->getVal()<<" +/- "<<implantRatio->getPropagatedError(*r)<<"\n";
+    }
 
     // ---- goodness of fit (and plots) ----
     // Forward time: linear bins of width parent T1/2/linBinFactor (fine log
@@ -579,15 +726,15 @@ int main(int argc, char** argv)
     std::unique_ptr<RooAddPdf> sumGatedPos;
     std::vector<Region> regions;
     if (!alphaGate){
-        regions.push_back({"pos","forward time",true,M->decayPos,slice("cat==cat::pos")});
-        regions.push_back({"neg","backward time (accidental)",false,M->bkgNeg,slice("cat==cat::neg")});
+        regions.push_back({"pos","forward time",true,decayPosPdf,slice("cat==cat::pos")});
+        regions.push_back({"neg","backward time (accidental)",false,bkgNegPdf,slice("cat==cat::neg")});
     } else {
-        sumGatedPos.reset(new RooAddPdf("sumGatedPos","",RooArgList(*M->betaPos,*M->alphaPos)));
+        sumGatedPos.reset(new RooAddPdf("sumGatedPos","",RooArgList(*betaPosPdf,*alphaPosPdf)));
         regions.push_back({"sumpos","forward time, beta-or-alpha",true,sumGatedPos.get(),slice("gcat==gcat::bpos || gcat==gcat::apos")});
-        regions.push_back({"bpos","forward time, beta gate (not alpha-tagged)",true,M->betaPos,slice("gcat==gcat::bpos")});
-        regions.push_back({"apos","forward time, alpha gate",true,M->alphaPos,slice("gcat==gcat::apos")});
-        regions.push_back({"bneg","backward time, beta gate",false,M->bkgNeg,slice("gcat==gcat::bneg")});
-        regions.push_back({"aneg","backward time, alpha gate",false,M->alphaNeg,slice("gcat==gcat::aneg")});
+        regions.push_back({"bpos","forward time, beta gate (not alpha-tagged)",true,betaPosPdf,slice("gcat==gcat::bpos")});
+        regions.push_back({"apos","forward time, alpha gate",true,alphaPosPdf,slice("gcat==gcat::apos")});
+        regions.push_back({"bneg","backward time, beta gate",false,bkgNegPdf,slice("gcat==gcat::bneg")});
+        regions.push_back({"aneg","backward time, alpha gate",false,alphaNegPdf,slice("gcat==gcat::aneg")});
     }
     const int nLin = std::max(1,(int)std::llround((timeRange-startTime)/(hl/linBinFactor)));
     RooBinning linBins(std::min(nLin,5000), startTime, timeRange);
@@ -619,20 +766,24 @@ int main(int argc, char** argv)
         // channel) | pull. Forward-time rows first (total, then the gates),
         // then one row of backward-time panels (flat, linear only).
         // components of the total forward-time curve
-        RooAbsPdf* bkgPosAll = alphaGate ? M->CombinedBkgPosGated : M->CombinedBkgPos;
-        RooAddPdf bkgPlusParent("bkgPlusParent","",RooArgList(*bkgPosAll,*M->ActivityPdfParentPos));
+        RooAbsPdf* bkgPosAll = bkgPosAllPdf;
         std::vector<const Region*> posRegions, negRegions;
         for (auto& rg : regions) (rg.isPos ? posRegions : negRegions).push_back(&rg);
         const int nrows = posRegions.size() + 1;
         TCanvas c("cfit","pgenfit3 decay-curve fit",2400,380*nrows);
         c.Divide(4,nrows);
+        auto& this_components = components; // (the lambda's bool argument shadows the name)
         auto drawPos=[&](int pad, const RooBinning& bins, bool logBins, const Region& rg, bool components){
-            std::string title = rg.title + (logBins?" (log x)":" (linear x)") + (components?": total, bkg+parent, bkg":"");
+            std::string compNames;
+            for (auto& cp : this_components) compNames += ", "+cp.first;
+            std::string title = rg.title + (logBins?" (log x)":" (linear x)") + (components?": total"+compNames+", bkg":"");
             RooPlot* fr = x_pos.frame(Range(bins.lowBound(),bins.highBound()), Title(title.c_str()));
             rg.data->plotOn(fr, Binning(bins), Name("d"));
             rg.pdf->plotOn(fr, LineColor(kRed), Precision(1e-8), Name("c"));
             if (components){
-                bkgPlusParent.plotOn(fr, LineColor(kBlue), LineStyle(kDashed), Precision(1e-8));
+                const int colors[]={kBlue,kMagenta+1,kOrange+7,kCyan+2,kViolet};
+                for (size_t ic=0; ic<this_components.size(); ic++)
+                    this_components[ic].second->plotOn(fr, LineColor(colors[ic%5]), LineStyle(kDashed), Precision(1e-8));
                 bkgPosAll->plotOn(fr, LineColor(kGreen+2), LineStyle(kDotted), Precision(1e-8));
             }
             RooPlot* pf = x_pos.frame(Range(bins.lowBound(),bins.highBound()), Title("pull"));
@@ -675,7 +826,8 @@ int main(int argc, char** argv)
     std::cout<<"PULLDATA l0="<<l0.getVal()<<" l0err="<<l0.getError()
              <<" l0errhi="<<l0.getErrorHi()<<" l0errlo="<<l0.getErrorLo()<<" l0true="<<species[0].l
              <<" halflife="<<hl
-             <<" N0raw="<<N0raw.getVal()<<" N0rawerr="<<N0raw.getError()
+             <<(isMix ? " nspecies="+std::to_string(nMix)+" Nimp="+std::to_string(Nimp.getVal())
+                        : " N0raw="+std::to_string(N0raw.getVal())+" N0rawerr="+std::to_string(N0raw.getError()))
              <<" TrueNbeta="<<M->TrueNbetaPerSpecies[0]->getVal()
              <<" TrueNbetaerr="<<M->TrueNbetaPerSpecies[0]->getPropagatedError(*r)
              <<" npos="<<nPos<<" nneg="<<nNeg<<" napos="<<nAPos<<" naneg="<<nANeg
@@ -683,10 +835,16 @@ int main(int argc, char** argv)
     for (auto* a : r->floatParsFinal()){
         auto* v=(RooRealVar*)a;
         std::string vn=v->GetName();
-        if (vn=="l0" || vn=="N0raw") continue;
+        if (vn==l0.GetName() || vn=="N0raw" || vn=="Nimp") continue;
         std::cout<<" "<<vn<<"="<<v->getVal()<<" "<<vn<<"err="<<v->getError()
                  <<" "<<vn<<"errhi="<<v->getErrorHi()<<" "<<vn<<"errlo="<<v->getErrorLo();
         if (trueVal.count(vn)) std::cout<<" "<<vn<<"true="<<trueVal[vn];
+    }
+    if (isMix){
+        // implant ratio N(s0)/N(s1) (derived; true value from the file, if any)
+        std::cout<<" ratio01="<<implantRatio->getVal()<<" ratio01err="<<implantRatio->getPropagatedError(*r);
+        if (trueVal.count("frac_s0") && trueVal.count("frac_s1") && trueVal["frac_s1"]>0)
+            std::cout<<" ratio01true="<<trueVal["frac_s0"]/trueVal["frac_s1"];
     }
     for (auto& kv : gofChi2)
         std::cout<<" gof_"<<kv.first<<"_chi2lambda="<<kv.second<<" gof_"<<kv.first<<"_nbins="<<gofNbins[kv.first]
@@ -714,19 +872,19 @@ int main(int argc, char** argv)
             for (auto* a : *pars){
                 auto* v=dynamic_cast<RooRealVar*>(a);
                 const std::string vn = v ? v->GetName() : "";
-                if (v && !v->isConstant() && vn!="N0raw" && vn!="bkga") minosPars.add(*v);
+                if (v && !v->isConstant() && vn!="N0raw" && vn!="Nimp" && vn!="bkga") minosPars.add(*v);
             }
             if (!minosPars.empty()) tm.minos(minosPars);
             std::unique_ptr<RooFitResult> tr(tm.save());
             std::cout.precision(12);
             std::cout<<"GENTOY PULLDATA l0="<<l0.getVal()<<" l0err="<<l0.getError()
                      <<" l0errhi="<<l0.getErrorHi()<<" l0errlo="<<l0.getErrorLo()
-                     <<" l0true="<<((RooRealVar*)genVals->find("l0"))->getVal()
+                     <<" l0true="<<((RooRealVar*)genVals->find(l0.GetName()))->getVal()
                      <<" status="<<tr->status()<<" covQual="<<tr->covQual()<<" nevents="<<toy->numEntries();
             for (auto* a : tr->floatParsFinal()){
                 auto* v=(RooRealVar*)a;
                 std::string vn=v->GetName();
-                if (vn=="l0") continue;
+                if (vn==l0.GetName()) continue;
                 std::cout<<" "<<vn<<"="<<v->getVal()<<" "<<vn<<"err="<<v->getError()
                          <<" "<<vn<<"errhi="<<v->getErrorHi()<<" "<<vn<<"errlo="<<v->getErrorLo()
                          <<" "<<vn<<"true="<<((RooRealVar*)genVals->find(vn.c_str()))->getVal();

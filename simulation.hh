@@ -121,6 +121,19 @@ class simulation
     void Init(decaypath* path){fdecaypathobj=path;}
     void setRandomSeed(Int_t seedno=4357){rseed=new TRandom3(seedno);}
 
+    //! Mixture of implanted species (mainsimulation_mix.cc): each species is
+    //! simulated by its own object; setSpeciesIndex tags its implants
+    //! (ion "mode" and the correlation tree's "ionspecies" branch), and
+    //! mergeHits moves another object's implant/decay/neutron hits into this
+    //! one, which then correlates them all together.
+    void setSpeciesIndex(Int_t i){fspeciesIndex=i;}
+    Int_t getNImplants(){return fprimImplantEvt;}
+    void mergeHits(simulation* other){
+        ionMap.insert(other->ionMap.begin(),other->ionMap.end());   other->ionMap.clear();
+        betaMap.insert(other->betaMap.begin(),other->betaMap.end()); other->betaMap.clear();
+        neuMap.insert(other->neuMap.begin(),other->neuMap.end());   other->neuMap.clear();
+    }
+
     void BookSimulationTree();
     void BookCorrelationTree();
 
@@ -235,6 +248,8 @@ class simulation
                          //! technique as the BRIKEN commissioning paper's
                          //! beam-interruption exclusion).
     Int_t fmlh_alpha;   //! 1 if the correlated decay hit is an alpha (mode 10)
+    Int_t fmlh_ionspecies=-1; //! species index of the correlated implant (mixture truth; -1 otherwise)
+    Int_t fspeciesIndex=-1;
     Double_t fmlhbw_t;
     Int_t fmlhbw_mult;
     TH1F* fsim_hdecay;

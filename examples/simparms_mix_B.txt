@@ -1,0 +1,86 @@
+# Second species of the mixture example: implanted at 0.5/s over the same beam time;
+# all background rates 0 (the backgrounds are given once, in simparms_alpha_test_long.txt)
+#If we use time data of implantation from file, set it to 1
+istdifffromfile 0
+#If we use time data of implantation from file, set number of entries here
+ntdiffentries 20000
+#If we use time data of implantation from file, set the entry index to begin with here
+itdiffentrybegin 110000
+#If we fix implantation position to a fix mean value, set it to 1
+isfiximppos 0
+#If we choose beta background from histogram (hx.root and hy.root)
+ishistgausbkg 0
+#Beam time (add 1 at the begining to have more)
+beamtime 30000
+#Beam rate rate
+beamrate 0.5
+#Isotope percentage
+isoperctg 100.
+#Beta gaussian distributed background rate
+betabkgrateg 0
+#Beta uniform distributed background rate
+betabkgrateu 0
+#External neutron bakground rate (reduce a bit, orignal value was 60.3635)
+neubkgrate 0
+#External 2 neutron bakground rate (8 may be fine?)
+r2neubkgrate 0
+#Percentage of neutron correlated with beta background gassian
+randbetaneuperctg 3.14
+#Percentage of 2 neutron correlated with beta background gassian
+randbeta2neuperctg 0.12
+
+#Beta efficiency
+betaeff 50.
+#Neutron efficiency
+neueff 66.8
+#Beta Neutron moderation time in second
+betaneutronmodtime 0.000021
+#Beam Neutron background moderation time in second
+beamneutronmodtime 0.000027
+
+#DeltaXY limited correlation area (set very large value, say 100000 to select all)
+deltaxylimit 1.5
+#DeltaX (distance from implantation) mean
+dxbetamean 0.
+#DeltaX sigma
+dxbetasigma 1.
+#DeltaY (distance from implantation) mean
+dybetamean 0.
+#DeltaY sigma
+dybetasigma 1.
+
+#max-min of implantation profile
+xmin 0.
+xmax 128.
+ymin 0.
+ymax 128.
+#Mean X of implant profile
+ximpmean 64.
+#Mean Y of implant profile
+yimpmean 64.
+#Sigma X of implant profile
+ximpsigma 10.
+#Sigma Y of implant profile
+yimpsigma 10.
+#Mean X of gassian distributed background profile
+xbetabkgmean 64
+#Mean Y of gassian distributed backgroundprofile
+ybetabkgmean 64.
+#Sigma X of gassian distributed backgroundprofile
+xbetabkgsigma 14.
+#Sigma Y of gassian distributed backgroundprofile
+ybetabkgsigma 19.
+
+# Offset in timestamp
+tsoffset 3600
+# Percentage of neutron correlated with beam, set to 0 if this background neutron is not considered
+neuwbeamperctg 0
+
+#Alpha detection efficiency (percent)
+alphaeff 100.
+#Alpha position spread around the implant (limit and gaussian sigma)
+deltaxylimitalpha 1.
+dxalphamean 0.
+dxalphasigma 0.12
+dyalphamean 0.
+dyalphasigma 0.12

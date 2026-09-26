@@ -145,6 +145,45 @@ backgrounds ÷10): one simulation takes 3.5 GB and 7.5 s. Fit with
     parms/At224parms.txt_effparms 900 4 at224 0 600
 ```
 
+### Mixture of implanted species
+
+When several ion species are implanted and not separated (e.g. neighbouring
+nuclides in the same PID gate), their decay curves add up.
+
+- **simulation**: `simulation_mix <out.root> <seed> <parmsexA> <simparmsA> <parmsexB> <simparmsB> ...`
+  runs each species with its own network and beam/detector settings (implant
+  rate = its simparms `beamrate`) over the same beam time, merges all hits,
+  and correlates them together, so each decay is also accidentally correlated
+  with the other species' implants. The correlation settings come from the
+  first simparms, and the backgrounds of all simparms add up, so give them
+  once and set `betabkgrateg/betabkgrateu/neubkgrate/r2neubkgrate 0` in the
+  others. The file stores the true implant counts (`TParameter nimplant_s<i>`)
+  and the correlation tree has a branch `ionspecies` (truth).
+- **fit**: pass a comma-separated parmsex list (`A.txt,B.txt`) to `build.sh`
+  and `fit_decay_curve`. Each species keeps its own network and parameters,
+  prefixed `s<i>_` (`s0_l0`, `s1_l0`, …), while `bkg`, `bkga`, `be` and `ab` are
+  shared. The parent normalisations become `s<i>_N0raw = Nimp·frac_s<i>·s<i>_l0`:
+  `Nimp` is the total number of implants and **`frac_s<i>` the implant fraction
+  of species i**, the new fitted parameter (the last species gets 1 − the
+  others). The implant ratio `frac_s0/frac_s1` is printed with its error
+  (`ratio01` on the `PULLDATA` line; `frac_s<i>true`/`ratio01true` from the
+  file). Alpha gating works the same way. A single parmsex file gives exactly
+  the single-species fit.
+- **one toy**: `./run_mix_toy.sh <parmsexA,parmsexB> <simparmsA,simparmsB> <seed> [effparms] ...`
+
+Example: `examples/alpha_test_parms.txt` (214Pb chain, 1/s, all
+backgrounds) + `examples/mix_B_parms.txt` (100Rb 0.05 s → 100Sr → 100Y, 0.5/s,
+backgrounds 0 in `examples/simparms_mix_B.txt`); true fraction 2/3. One toy
+(0.76 GB, 1 s simulation):
+
+| | total fit | alpha-gated fit |
+|---|---|---|
+| frac_s0 (truth 0.668) | 0.671 ± 0.021 | 0.667 ± 0.005 |
+| implant ratio (truth 2.01) | 2.04 ± 0.19 | 2.005 ± 0.046 |
+
+Only species 0 emits alphas, so the alpha gate separates the two much
+better.
+
 ## Memory safety
 
 A single `simulation` process with `simparmsex.txt` (36000 s beam, 130/s

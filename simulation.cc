@@ -115,6 +115,7 @@ void simulation::BookCorrelationTree()
     ftreemlh->Branch("y",&fmlh_mult,"y/I");
     ftreemlh->Branch("ionT",&fmlh_ionT,"ionT/D");
     ftreemlh->Branch("alpha",&fmlh_alpha,"alpha/I");
+    ftreemlh->Branch("ionspecies",&fmlh_ionspecies,"ionspecies/I");
 
     ftreemlhbw=new TTree("treebw","treebw");
     ftreemlhbw->Branch("x",&fmlhbw_t,"x/D");
@@ -512,7 +513,7 @@ void simulation::registerIonImplant(){
             implanthit.y=fyimp;
             implanthit.z=0;
             implanthit.id=-1;
-            implanthit.mode=-1;
+            implanthit.mode=fspeciesIndex; // -1, or the species index in a mixture
             implanthit.evt=fprimImplantEvt;
             implanthit.fl_n=0;
             ionMap.insert(make_pair(implanthit.T,implanthit));
@@ -785,9 +786,11 @@ void simulation::runSimulation()
     cout<<fneuEvt<<endl;
 
     //! gaussian distrubution beta bkg
+    //! (a zero rate means no such background, e.g. for the extra species of
+    //! a mixture whose backgrounds are all given by the first one)
     ftsbetabkgg=fsimparms.tsoffset;
     fbetabkgEvt=0;
-    while (ftsbetabkgg<fprimImplantT*1.1){
+    while (fsimparms.betabkgrateg>0 && ftsbetabkgg<fprimImplantT*1.1){
         registerBetaBackground();
     }
     cout<<fbetabkgEvt<<endl;
@@ -795,7 +798,7 @@ void simulation::runSimulation()
     //! uniform distrubution beta bkg
     ftsbetabkgg=fsimparms.tsoffset;
     fbetabkgEvt=0;
-    while (ftsbetabkgg<fprimImplantT*1.1){
+    while (fsimparms.betabkgrateu>0 && ftsbetabkgg<fprimImplantT*1.1){
         registerBetaBackground(1);
     }
     cout<<fbetabkgEvt<<endl;
@@ -805,7 +808,7 @@ void simulation::runSimulation()
     //! single neutron bkg
     ftsneutronbkgg=fsimparms.tsoffset;
     fneutronbkgEvt=0;
-    while (ftsneutronbkgg<fprimImplantT*1.01){
+    while (fsimparms.neurndbkgrate>0 && ftsneutronbkgg<fprimImplantT*1.01){
         registerNeutronBackground();
     }
     cout<<fneutronbkgEvt<<endl;
@@ -813,7 +816,7 @@ void simulation::runSimulation()
     //! two neutrons bkg
     ftsneutronbkgg=fsimparms.tsoffset;
     fneutronbkgEvt=0;
-    while (ftsneutronbkgg<fprimImplantT*1.01){
+    while (fsimparms.r2neurndbkgrate>0 && ftsneutronbkgg<fprimImplantT*1.01){
         registerNeutronBackground(1);
     }
     cout<<fneutronbkgEvt<<endl;
@@ -933,6 +936,7 @@ void simulation::correlateData()
                 fmlh_mult=fcorrNeutronData_fw.mult;
                 fmlh_ionT=corrts;
                 fmlh_alpha=(betahit.mode==10) ? 1 : 0;
+                fmlh_ionspecies=ionhit.mode;
                 ftreemlh->Fill();
                 fmlhbw_t=fmlh_t;
                 fmlhbw_mult=fcorrNeutronData_bw.mult;
