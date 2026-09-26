@@ -4,6 +4,10 @@
 # collected in pull_study_results/<prefix>_all.txt; analyse it with
 # ./plot_pulls.py.
 #
+# Mixture of implanted species: give comma-separated lists
+# "parmsexA,parmsexB" "simparmsA,simparmsB" (simulated with simulation_mix,
+# fitted as a mixture -- see README).
+#
 # Usage: ./run_pull_study.sh <parmsex_file> <simparmsex_file> <startSeed> <nToys>
 #            [effparms|none] [nWorkers=4] [boundaryMarginSec=900] [ncpu_per_fit=1]
 #            [prefix=pull] [startTime=0] [timeRange=10]
@@ -25,8 +29,17 @@ if [ $# -lt 4 ]; then
     exit 1
 fi
 abspath(){ echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; }
-PARMSEX=$(abspath "$1")
-SIMPARMS=$(abspath "$2")
+IFS=',' read -r -a PL <<< "$1"
+IFS=',' read -r -a SL <<< "$2"
+[ ${#PL[@]} -eq ${#SL[@]} ] || { echo "need one simparms file per parmsex file" >&2; exit 1; }
+PARMS_ABS=(); SIMARGS=()
+for i in "${!PL[@]}"; do
+    PARMS_ABS+=("$(abspath "${PL[$i]}")")
+    SIMARGS+=("$(abspath "${PL[$i]}")" "$(abspath "${SL[$i]}")")
+done
+PARMSEX=$(IFS=','; echo "${PARMS_ABS[*]}")   # one file, or the mixture list
+SIMPARMS=$(abspath "${SL[0]}")
+NSPECIES=${#PL[@]}
 START_SEED=$3
 NTOYS=$4
 EFF=${5:-none}
@@ -59,7 +72,7 @@ trap 'rm -rf "$BUILD_DIR"' EXIT
 
 PER_WORKER=$(( (NTOYS + NWORKERS - 1) / NWORKERS ))
 {
-    echo "# parmsex=$PARMSEX simparmsex=$SIMPARMS effparms=$EFF"
+    echo "# parmsex=$PARMSEX simparmsex=$2 effparms=$EFF"
     echo "# startSeed=$START_SEED nToys=$NTOYS boundaryMarginSec=$BOUNDARY startTime=$START_TIME timeRange=$TIME_RANGE"
 } > "$RESULTDIR/${PREFIX}_config.txt"
 echo "==> $NTOYS toys, $NWORKERS workers x $PER_WORKER, results in $RESULTDIR/${PREFIX}_all.txt"
@@ -75,7 +88,12 @@ run_worker() {
         local n=$(( w*PER_WORKER + i ))
         [ $n -ge "$NTOYS" ] && break
         seed=$(( START_SEED + n ))
-        if ! "$BUILD_DIR/simulation" "$PARMSEX" "$SIMPARMS" "$wdir/toy.root" "$seed" > "$wdir/sim.log" 2>&1; then
+        if [ "$NSPECIES" -gt 1 ]; then
+            simok=0; "$BUILD_DIR/simulation_mix" "$wdir/toy.root" "$seed" "${SIMARGS[@]}" > "$wdir/sim.log" 2>&1 || simok=1
+        else
+            simok=0; "$BUILD_DIR/simulation" "$PARMSEX" "$SIMPARMS" "$wdir/toy.root" "$seed" > "$wdir/sim.log" 2>&1 || simok=1
+        fi
+        if [ "$simok" -ne 0 ]; then
             echo "worker $w toy $i: simulation FAILED, seed=$seed $(grep -m1 -o 'bad_alloc' "$wdir/sim.log" || true)" >> "$out"; continue
         fi
         line=$(cd "$BUILD_DIR" && ./fit_decay_curve "$wdir/toy.root" "$PARMSEX" "$NCPU" "$EFF" noplot \

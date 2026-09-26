@@ -1,0 +1,14 @@
+void decaypath::Init(char*) read input files:
+/data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/examples/alpha_test_parms.txt
+void decaypath::makePath()
+void decaypath::printMember()
+void decaypath::printPath()
+void decaypath::Init(char*) read input files:
+/data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/examples/mix_B_parms.txt
+void decaypath::makePath()
+void decaypath::printMember()
+void decaypath::printPath()
+built in /data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/builds/pull.T1ConG (2 implanted species)
+==> 100 toys, 8 workers x 13, results in /data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/pull_study_results/mix_total_100_all.txt
+==> memory budget 62 GB, 8 workers capped at 2 GB each
+==> done: 100/100 toys fitted -> /data01/userdata/phong/projects/dtasana_250404/fit/pgenfit3/pull_study_results/mix_total_100_all.txt
